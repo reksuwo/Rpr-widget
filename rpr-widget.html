@@ -2,14 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>RPR Widget Debug</title>
+  <title>RPR Widget with Search</title>
 </head>
 <body>
-  <h1>RPR Widget Debug</h1>
-  <pre id="debug"></pre>
+  <h1>RPR Property Estimation</h1>
+
+  <!-- Search Bar Widget -->
+  <div id="rpr-search-container"></div>
+
+  <!-- AVM Widget -->
+  <div id="rpr-avm-container"></div>
 
   <script>
-    // Log what domain the browser is using
+    // Debug info
     const debugInfo = {
       hostname: window.location.hostname,
       href: window.location.href,
@@ -17,18 +22,30 @@
       userAgent: navigator.userAgent
     };
     console.log("DEBUG INFO:", debugInfo);
-    document.getElementById("debug").textContent = JSON.stringify(debugInfo, null, 2);
   </script>
 
+  <!-- RPR Search Widget -->
   <script>
-    // Now load the widget
-    window.rprAvmWidgetOptions = {
+    window.rprSearchWidgetOptions = {
       Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
-      Query: "4000 Gulf Terrace Dr, Unit 210, Destin, FL 32541",
+      ContainerId: "rpr-search-container",
       CoBrandCode: "btswavesoftheemeraldcoast",
-      ShowRprLinks: false
+      OnAddressSelected: function(address) {
+        // When a user selects an address, load the AVM widget
+        window.rprAvmWidgetOptions = {
+          Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
+          Query: address,
+          CoBrandCode: "btswavesoftheemeraldcoast",
+          ShowRprLinks: false,
+          ContainerId: "rpr-avm-container"
+        };
+        // Load the AVM widget script dynamically
+        var script = document.createElement("script");
+        script.src = "https://www.narrpr.com/widgets/avm-widget/widget.ashx/script";
+        document.body.appendChild(script);
+      }
     };
   </script>
-  <script src="https://www.narrpr.com/widgets/avm-widget/widget.ashx/script"></script>
+  <script src="https://www.narrpr.com/widgets/search-widget/script"></script>
 </body>
 </html>
