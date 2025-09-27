@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RPR AVM Widget</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #ffffff;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RPR Widget</title>
+</head>
+<body>
+  <div id="rpr-widget"></div>
+
   <script>
-    var rprAvmWidgetOptions = {
+    window.rprAvmWidgetOptions = {
       Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
       Query: "4000 Gulf Terrace Dr, Unit 210, Destin, FL 32541",
       CoBrandCode: "btswavesoftheemeraldcoast",
       ShowRprLinks: false
-    }
+    };
+
+    (function() {
+      var script = document.createElement("script");
+      script.src = "https://www.narrpr.com/widgets/avm-widget/widget.ashx/script";
+      script.async = true;
+      document.body.appendChild(script);
+    })();
   </script>
-  <script src="https://www.narrpr.com/widgets/avm-widget/widget.ashx/script"></script>
-</head>
-<body>
 </body>
 </html>
