@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RPR Widget</title>
+  <meta charset="UTF-8">
+  <title>RPR Widget Debug</title>
 </head>
 <body>
-  <div id="rpr-widget"></div>
+  <h1>RPR Widget Debug</h1>
+  <pre id="debug"></pre>
 
   <script>
+    // Log what domain the browser is using
+    const debugInfo = {
+      hostname: window.location.hostname,
+      href: window.location.href,
+      referrer: document.referrer,
+      userAgent: navigator.userAgent
+    };
+    console.log("DEBUG INFO:", debugInfo);
+    document.getElementById("debug").textContent = JSON.stringify(debugInfo, null, 2);
+  </script>
+
+  <script>
+    // Now load the widget
     window.rprAvmWidgetOptions = {
       Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
       Query: "4000 Gulf Terrace Dr, Unit 210, Destin, FL 32541",
       CoBrandCode: "btswavesoftheemeraldcoast",
       ShowRprLinks: false
     };
-
-    (function() {
-      var script = document.createElement("script");
-      script.src = "https://www.narrpr.com/widgets/avm-widget/widget.ashx/script";
-      script.async = true;
-      document.body.appendChild(script);
-    })();
   </script>
+  <script src="https://www.narrpr.com/widgets/avm-widget/widget.ashx/script"></script>
 </body>
 </html>
