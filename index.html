@@ -1,19 +1,41 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>RPR Widget</title>
-  </head>
-  <body>
-    <div id="rpr-widget"></div>
-    <script>
-      var rprAvmWidgetOptions = {
-        Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
-        Query: "4000 Gulf Terrace Dr, Unit 210, Destin, FL 32541",
-        CoBrandCode: "btswavesoftheemeraldcoast",
-        ShowRprLinks: false
-      }
-    </script>
-    <script src="//www.narrpr.com/widgets/avm-widget/widget.ashx/script"></script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RPR Widget Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f4f4f4;
+    }
+    h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    #rpr-widget {
+      min-height: 400px; /* ensures the div has height */
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>RPR Widget Below:</h2>
+  <div id="rpr-widget"></div>
+
+  <!-- Widget configuration -->
+  <script>
+    var rprAvmWidgetOptions = {
+      Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
+      Query: "4000 Gulf Terrace Dr, Unit 210, Destin, FL 32541",
+      CoBrandCode: "btswavesoftheemeraldcoast",
+      ShowRprLinks: false
+    };
+  </script>
+
+  <!-- RPR widget script -->
+  <script src="https://www.narrpr.com/widgets/avm-widget/widget.ashx/script"></script>
+</body>
 </html>
