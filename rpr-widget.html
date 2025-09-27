@@ -31,7 +31,7 @@
       ContainerId: "rpr-search-container",
       CoBrandCode: "btswavesoftheemeraldcoast",
       OnAddressSelected: function(address) {
-        // When a user selects an address, load the AVM widget
+        // Load the AVM widget for the selected address
         window.rprAvmWidgetOptions = {
           Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
           Query: address,
@@ -39,7 +39,7 @@
           ShowRprLinks: false,
           ContainerId: "rpr-avm-container"
         };
-        // Load the AVM widget script dynamically
+        // Dynamically load AVM widget script
         var script = document.createElement("script");
         script.src = "https://www.narrpr.com/widgets/avm-widget/widget.ashx/script";
         document.body.appendChild(script);
