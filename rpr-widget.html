@@ -1,34 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RPR Widget Debug</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RPR Widget</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+    #rpr-widget {
+      width: 100%;
+      max-width: 900px;
+      min-height: 600px;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-  <h1>RPR Widget Debug</h1>
-  <pre id="debug"></pre>
+  <div id="rpr-widget"></div>
 
   <script>
-    // Log what domain the browser is using
-    const debugInfo = {
-      hostname: window.location.hostname,
-      href: window.location.href,
-      referrer: document.referrer,
-      userAgent: navigator.userAgent
-    };
-    console.log("DEBUG INFO:", debugInfo);
-    document.getElementById("debug").textContent = JSON.stringify(debugInfo, null, 2);
-  </script>
-
-  <script>
-    // Now load the widget
+    // 🔑 Widget options - no Query so RPR shows its search input
     window.rprAvmWidgetOptions = {
       Token: "F4E571BF-8D9C-4929-BBF3-4588AB922D43",
-      Query: "4000 Gulf Terrace Dr, Unit 210, Destin, FL 32541",
       CoBrandCode: "btswavesoftheemeraldcoast",
       ShowRprLinks: false
     };
   </script>
-  <script src="https://www.narrpr.com/widgets/avm-widget/widget.ashx/script"></script>
+
+  <!-- Load RPR Widget script -->
+  <script src="https://www.narrpr.com/widgets/avm-widget/widget.ashx"></script>
 </body>
 </html>
