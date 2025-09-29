@@ -1,4 +1,4 @@
-// /api/route.js
+// /api/search.js
 
 import fetch from "node-fetch";
 
