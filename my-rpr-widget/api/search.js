@@ -3,39 +3,57 @@ export default async function handler(req, res) {
     const { address } = req.query;
 
     if (!address) {
+      console.warn("⚠️ Missing 'address' query parameter");
       return res.status(400).json({ error: "Missing address parameter" });
     }
 
-    // Make sure the token is available
+    // Check for API token
     const token = process.env.RPR_API_TOKEN;
     if (!token) {
-      console.error("❌ Missing RPR_API_TOKEN environment variable");
-      return res.status(500).json({ error: "Server misconfiguration: missing API token" });
+      console.error("❌ RPR_API_TOKEN is missing in environment variables");
+      return res.status(500).json({ error: "Server misconfiguration: API token not set" });
     }
 
     // Build RPR API request
     const apiUrl = `https://api.narrpr.com/avm?address=${encodeURIComponent(address)}`;
+    console.log("➡️ Sending request to RPR API:", apiUrl);
 
     const response = await fetch(apiUrl, {
       headers: {
-        "Authorization": `Bearer ${token}`, // if Bearer required
+        "Authorization": `Bearer ${token}`, // some APIs may use `Token ${token}`
         "Content-Type": "application/json"
       }
     });
 
-    if (!response.ok) {
+    // Log status code for debugging
+    console.log("⬅️ RPR API response status:", response.status);
+
+    if (response.status === 401 || response.status === 403) {
       const errorText = await response.text();
-      console.error("❌ RPR API error:", response.status, errorText);
-      return res.status(response.status).json({ error: "RPR API error", details: errorText });
+      console.error("❌ Authorization failed! Token may be invalid or expired:", errorText);
+      return res.status(401).json({
+        error: "Unauthorized - check your RPR_API_TOKEN",
+        details: errorText
+      });
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ RPR API returned error ${response.status}:`, errorText);
+      return res.status(response.status).json({
+        error: `RPR API error (status ${response.status})`,
+        details: errorText
+      });
+    }
 
-    // ✅ Return the API response
-    res.status(200).json(data);
+    // Parse successful response
+    const data = await response.json();
+    console.log("✅ RPR API request succeeded");
+
+    return res.status(200).json(data);
 
   } catch (err) {
-    console.error("❌ Server error:", err);
-    res.status(500).json({ error: "Internal server error", details: err.message });
+    console.error("❌ Unexpected server error:", err);
+    return res.status(500).json({ error: "Internal server error", details: err.message });
   }
 }
