@@ -1,38 +1,41 @@
 export default async function handler(req, res) {
-  const { address } = req.query;
-  const token = process.env.RPR_TOKEN;
-
-  if (!token) {
-    return res.status(500).json({ error: "Missing RPR_TOKEN in environment variables" });
-  }
-
   try {
-    const url = `https://api.narrpr.com/avm?address=${encodeURIComponent(address)}`;
+    const { address } = req.query;
 
-    const response = await fetch(url, {
+    if (!address) {
+      return res.status(400).json({ error: "Missing address parameter" });
+    }
+
+    // Make sure the token is available
+    const token = process.env.RPR_API_TOKEN;
+    if (!token) {
+      console.error("❌ Missing RPR_API_TOKEN environment variable");
+      return res.status(500).json({ error: "Server misconfiguration: missing API token" });
+    }
+
+    // Build RPR API request
+    const apiUrl = `https://api.narrpr.com/avm?address=${encodeURIComponent(address)}`;
+
+    const response = await fetch(apiUrl, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
+        "Authorization": `Bearer ${token}`, // if Bearer required
+        "Content-Type": "application/json"
+      }
     });
 
-    const text = await response.text(); // read raw response first
-
     if (!response.ok) {
-      console.error("RPR API error:", response.status, text);
-      return res.status(response.status).json({ error: text });
+      const errorText = await response.text();
+      console.error("❌ RPR API error:", response.status, errorText);
+      return res.status(response.status).json({ error: "RPR API error", details: errorText });
     }
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return res.status(500).json({ error: "RPR API did not return valid JSON", raw: text });
-    }
+    const data = await response.json();
 
-    return res.status(200).json(data);
+    // ✅ Return the API response
+    res.status(200).json(data);
+
   } catch (err) {
-    console.error("Handler error:", err);
-    return res.status(500).json({ error: err.message });
+    console.error("❌ Server error:", err);
+    res.status(500).json({ error: "Internal server error", details: err.message });
   }
 }
