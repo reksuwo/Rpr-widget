@@ -7,25 +7,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    // RPR API endpoint
     const url = `https://api.narrpr.com/avm?address=${encodeURIComponent(address)}`;
-
-    console.log("Fetching RPR API:", url);
 
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${token}`, // ✅ use token in header
+        Authorization: `Bearer ${token}`,
         Accept: "application/json",
       },
     });
 
+    const text = await response.text(); // read raw response first
+
     if (!response.ok) {
-      const text = await response.text();
       console.error("RPR API error:", response.status, text);
       return res.status(response.status).json({ error: text });
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return res.status(500).json({ error: "RPR API did not return valid JSON", raw: text });
+    }
+
     return res.status(200).json(data);
   } catch (err) {
     console.error("Handler error:", err);
