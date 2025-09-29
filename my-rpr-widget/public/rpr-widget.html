@@ -82,8 +82,17 @@
 
         const data = await response.json();
 
-        // Display raw JSON for now
-        resultsDiv.textContent = JSON.stringify(data, null, 2);
+        // Display results nicely (custom card example)
+        resultsDiv.innerHTML = `
+          <strong>Address:</strong> ${data.address || "N/A"}<br>
+          <strong>Valuation:</strong> $${data.avmValue || "N/A"}<br>
+          <strong>Confidence Score:</strong> ${data.confidenceScore || "N/A"}<br>
+          <hr>
+          <details>
+            <summary>Raw JSON</summary>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          </details>
+        `;
       } catch (err) {
         console.error("Frontend error:", err);
         resultsDiv.textContent = "❌ Error fetching data. Please try again.";
