@@ -1,28 +1,59 @@
-<div id="custom-rpr-widget" style="max-width:600px;">
-  <h2>Search Property</h2>
-  <form id="rpr-search-form">
-    <input type="text" id="address" placeholder="Enter address" style="width:100%; padding:8px;" />
-    <button type="submit" style="margin-top:8px; padding:8px 12px;">Search</button>
-  </form>
-  <div id="search-results" style="margin-top:12px; white-space: pre-wrap;"></div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RPR Property Search</title>
+</head>
+<body>
+  <div id="custom-rpr-widget" style="max-width:600px; margin:20px auto; font-family:Arial, sans-serif;">
+    <h2>Search Property</h2>
+    <form id="rpr-search-form">
+      <input 
+        type="text" 
+        id="address" 
+        placeholder="Enter address" 
+        style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;"
+      />
+      <button 
+        type="submit" 
+        style="margin-top:8px; padding:8px 12px; border:none; border-radius:4px; background:#0070f3; color:white; cursor:pointer;"
+      >
+        Search
+      </button>
+    </form>
+    <div id="search-results" style="margin-top:12px; white-space: pre-wrap; background:#f9f9f9; padding:10px; border:1px solid #ddd; border-radius:4px;"></div>
+  </div>
 
-<script>
-document.getElementById("rpr-search-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const address = document.getElementById("address").value;
-  const resultsDiv = document.getElementById("search-results");
+  <script>
+    document.getElementById("rpr-search-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const address = document.getElementById("address").value.trim();
+      const resultsDiv = document.getElementById("search-results");
 
-  resultsDiv.textContent = "Searching...";
+      if (!address) {
+        resultsDiv.textContent = "⚠️ Please enter an address.";
+        return;
+      }
 
-  try {
-    const response = await fetch(`/api/search?address=${encodeURIComponent(address)}`);
-    const data = await response.json();
+      resultsDiv.textContent = "🔎 Searching...";
 
-    resultsDiv.textContent = JSON.stringify(data, null, 2);
-  } catch (err) {
-    resultsDiv.textContent = "Error fetching data";
-    console.error(err);
-  }
-});
-</script>
+      try {
+        // Call your backend API route (route.js)
+        const response = await fetch(`/api/route?address=${encodeURIComponent(address)}`);
+        
+        if (!response.ok) {
+          throw new Error(`Server returned ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Display raw JSON (for now)
+        resultsDiv.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        console.error("Frontend error:", err);
+        resultsDiv.textContent = "❌ Error fetching data. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>
