@@ -2,47 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RPR Property Search</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f7fa;
       padding: 20px;
     }
     #custom-rpr-widget {
       max-width: 600px;
       margin: auto;
-      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    input, button {
+    h2 {
+      margin-top: 0;
+    }
+    input {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
       font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     button {
-      background: #0070f3;
-      color: white;
+      margin-top: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
       border: none;
+      border-radius: 5px;
+      background: #0070f3;
+      color: #fff;
       cursor: pointer;
     }
     button:hover {
-      background: #0059c9;
+      background: #005bb5;
     }
     #search-results {
-      margin-top: 16px;
-      padding: 12px;
-      background: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      margin-top: 20px;
       white-space: pre-wrap;
-      font-family: monospace;
-      font-size: 14px;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .result-card {
+      border: 1px solid #eee;
+      padding: 15px;
+      border-radius: 8px;
+      background: #fafafa;
+      margin-top: 10px;
+    }
+    .result-card h3 {
+      margin-top: 0;
     }
   </style>
 </head>
@@ -50,11 +64,7 @@
   <div id="custom-rpr-widget">
     <h2>Search Property</h2>
     <form id="rpr-search-form">
-      <input 
-        type="text" 
-        id="address" 
-        placeholder="Enter address (e.g. 4000 Gulf Terrace Dr, Destin FL)" 
-      />
+      <input type="text" id="address" placeholder="Enter address" />
       <button type="submit">Search</button>
     </form>
     <div id="search-results"></div>
@@ -63,39 +73,44 @@
   <script>
     document.getElementById("rpr-search-form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const address = document.getElementById("address").value.trim();
+
+      const address = document.getElementById("address").value;
       const resultsDiv = document.getElementById("search-results");
-
-      if (!address) {
-        resultsDiv.textContent = "⚠️ Please enter an address.";
-        return;
-      }
-
-      resultsDiv.textContent = "🔎 Searching...";
+      resultsDiv.textContent = "🔍 Searching...";
 
       try {
         const response = await fetch(`/api/search?address=${encodeURIComponent(address)}`);
-        
-        if (!response.ok) {
-          throw new Error(`Server returned ${response.status}`);
-        }
-
         const data = await response.json();
 
-        // Display results nicely (custom card example)
-        resultsDiv.innerHTML = `
-          <strong>Address:</strong> ${data.address || "N/A"}<br>
-          <strong>Valuation:</strong> $${data.avmValue || "N/A"}<br>
-          <strong>Confidence Score:</strong> ${data.confidenceScore || "N/A"}<br>
-          <hr>
-          <details>
-            <summary>Raw JSON</summary>
-            <pre>${JSON.stringify(data, null, 2)}</pre>
-          </details>
-        `;
+        resultsDiv.innerHTML = "";
+
+        if (data.error) {
+          // Show error message
+          resultsDiv.innerHTML = `
+            <div class="error">❌ ${data.message}</div>
+            <pre>${data.details || ""}</pre>
+          `;
+        } else if (data.data) {
+          // Show property results in a card format
+          const result = data.data;
+
+          resultsDiv.innerHTML = `
+            <div class="result-card">
+              <h3>Property Result</h3>
+              <p><strong>Address:</strong> ${address}</p>
+              <p><strong>Estimated Value:</strong> ${result.estimatedValue || "N/A"}</p>
+              <p><strong>Confidence Score:</strong> ${result.confidenceScore || "N/A"}</p>
+              <details>
+                <summary>View Full Data</summary>
+                <pre>${JSON.stringify(result, null, 2)}</pre>
+              </details>
+            </div>
+          `;
+        } else {
+          resultsDiv.innerHTML = `<div>No results found.</div>`;
+        }
       } catch (err) {
-        console.error("Frontend error:", err);
-        resultsDiv.textContent = "❌ Error fetching data. Please try again.";
+        resultsDiv.innerHTML = `<div class="error">❌ Frontend error: ${err.message}</div>`;
       }
     });
   </script>
