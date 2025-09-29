@@ -7,19 +7,28 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(
-      `https://api.narrpr.com/avm?address=${encodeURIComponent(address)}&token=${token}`
-    );
+    // RPR API endpoint
+    const url = `https://api.narrpr.com/avm?address=${encodeURIComponent(address)}`;
+
+    console.log("Fetching RPR API:", url);
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ use token in header
+        Accept: "application/json",
+      },
+    });
 
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(`RPR API error ${response.status}: ${text}`);
+      console.error("RPR API error:", response.status, text);
+      return res.status(response.status).json({ error: text });
     }
 
     const data = await response.json();
-    res.status(200).json(data);
+    return res.status(200).json(data);
   } catch (err) {
-    console.error("API error:", err);
-    res.status(500).json({ error: err.message });
+    console.error("Handler error:", err);
+    return res.status(500).json({ error: err.message });
   }
 }
