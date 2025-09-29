@@ -6,15 +6,11 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
+app.use(express.static("public"));
 
-// Proxy search endpoint
 app.get("/api/search", async (req, res) => {
   const { address } = req.query;
-
-  if (!address) {
-    return res.status(400).json({ error: "Address is required" });
-  }
+  if (!address) return res.status(400).json({ error: "Address is required" });
 
   try {
     const response = await fetch(
@@ -28,4 +24,4 @@ app.get("/api/search", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
